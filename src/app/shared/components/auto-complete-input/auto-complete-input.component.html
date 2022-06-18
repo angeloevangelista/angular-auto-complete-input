@@ -1,1 +1,21 @@
-<h1>INPUTÃO</h1>
+<mat-form-field>
+  <input
+    matInput
+    type="text"
+    [placeholder]="placeholder"
+    [formControl]="castAbstractControlAsFormControl"
+    [matAutocomplete]="matAutoCompleteIdentifier"
+  />
+
+  <mat-autocomplete
+    #matAutoCompleteIdentifier="matAutocomplete"
+    [displayWith]="getDisplayNameByIdentifier.bind(this)"
+  >
+    <mat-option
+      *ngFor="let state of filteredCollection | async"
+      [value]="state[options.identifierKey]"
+    >
+      {{ getDisplayNameByIdentifier(state[options.identifierKey]) }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>
