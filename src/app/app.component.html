@@ -18,28 +18,16 @@
 
       <mat-autocomplete
         #auto="matAutocomplete"
-        [displayWith]="displayFunction.bind(this)"
+        [displayWith]="getStateByCode.bind(this)"
       >
         <mat-option
           *ngFor="let state of filteredBrazilianStates | async"
           [value]="state.codigo"
         >
-          {{ state.nome }}
+          {{ getStateByCode(state.codigo) }}
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>
-
-    <!-- <mat-form-field>
-      <mat-label>Select</mat-label>
-      <mat-select placeholder="State" formControlName="state">
-        <mat-option
-          *ngFor="let state of brazilianStates"
-          [value]="state.codigo"
-        >
-          {{ state.nome }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field> -->
   </div>
 
   <button (click)="handleConsolePrint()">Console!</button>

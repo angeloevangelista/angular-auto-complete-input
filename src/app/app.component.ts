@@ -62,7 +62,10 @@ export class AppComponent implements OnInit {
     );
 
     const foundByDisplay = this.brazilianStates.find(
-      (p) => String(p.nome).toUpperCase() === String(value).toUpperCase()
+      (state) =>
+        state.nome.toUpperCase() === String(value).toUpperCase() ||
+        this.getStateByCode(state.codigo).toUpperCase() ===
+          String(value).toUpperCase()
     );
 
     const foundState = foundByCode || foundByDisplay;
@@ -87,18 +90,10 @@ export class AppComponent implements OnInit {
     const filterValue = String(value).toLowerCase();
 
     const filtered = this.brazilianStates.filter((state) =>
-      state.nome.toLowerCase().includes(filterValue)
+      this.getStateByCode(state.codigo).toLowerCase().includes(filterValue)
     );
 
     return filtered;
-  }
-
-  displayFunction(codigo: number): string {
-    const foundState = (this.brazilianStates || []).find(
-      (state) => state.codigo === codigo
-    );
-
-    return foundState ? foundState.nome : '';
   }
 
   getStateByCode(codigo: number): string {
@@ -106,6 +101,8 @@ export class AppComponent implements OnInit {
       (state) => state.codigo === codigo
     );
 
-    return foundState ? foundState.nome : '';
+    if (!foundState) return '';
+
+    return `${foundState.sigla} - ${foundState.nome}`;
   }
 }
