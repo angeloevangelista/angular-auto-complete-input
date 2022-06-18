@@ -1,0 +1,46 @@
+<app-auto-complete-input></app-auto-complete-input>
+
+<form [formGroup]="exampleForm">
+  <div>
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" placeholder="Name" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <input
+        matInput
+        type="text"
+        placeholder="State"
+        formControlName="state"
+        [matAutocomplete]="auto"
+      />
+
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        [displayWith]="displayFunction.bind(this)"
+      >
+        <mat-option
+          *ngFor="let state of filteredBrazilianStates | async"
+          [value]="state.codigo"
+        >
+          {{ state.nome }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <!-- <mat-form-field>
+      <mat-label>Select</mat-label>
+      <mat-select placeholder="State" formControlName="state">
+        <mat-option
+          *ngFor="let state of brazilianStates"
+          [value]="state.codigo"
+        >
+          {{ state.nome }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field> -->
+  </div>
+
+  <button (click)="handleConsolePrint()">Console!</button>
+</form>
