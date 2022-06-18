@@ -2,7 +2,7 @@ import { AbstractControl } from '@angular/forms';
 
 interface ExampleFormProperties {
   name: string;
-  state: unknown;
+  state: number;
 }
 
 type ExampleFormControls = {

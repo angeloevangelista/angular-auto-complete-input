@@ -1,19 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  ValidationErrors,
-} from '@angular/forms';
-import { Observable } from 'rxjs';
-import { startWith, map, filter } from 'rxjs/operators';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import {
-  BrazilianState,
-  ExampleFormControls,
-} from './models/app.component.model';
+import { ExampleFormControls } from './models/app.component.model';
 
 import rawBrazilianStates from '../assets/json/brazil-states.json';
+import { AutoCompleteInputOptions } from './shared/components/auto-complete-input/auto-complete-input.component';
 
 @Component({
   selector: 'app-root',
@@ -21,24 +12,23 @@ import rawBrazilianStates from '../assets/json/brazil-states.json';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
+  autoCompleteInputOptions: AutoCompleteInputOptions = {
+    identifierKey: 'codigo',
+    mainDisplayKey: 'nome',
+    secondaryDisplayKey: 'sigla',
+    invertDisplay: true,
+    validation: {
+      errorKey: 'invalidState',
+      errorMessage: 'Escolha um item da lista.',
+    },
+  };
+
   exampleForm: FormGroup<ExampleFormControls>;
-  brazilianStates: BrazilianState[] = [];
-  filteredBrazilianStates: Observable<BrazilianState[]>;
+  brazilianStates: any[] = [];
 
   ngOnInit(): void {
     this.createForm();
     this.fetchStates();
-
-    this.filteredBrazilianStates =
-      this.exampleForm.controls.state.valueChanges.pipe(
-        startWith(''),
-        map((value) =>
-          typeof value === 'string' ? value : this.getStateByCode(value)
-        ),
-        map((name) =>
-          name ? this._filter(name) : this.brazilianStates.slice()
-        )
-      );
   }
 
   private fetchStates() {
@@ -47,62 +37,23 @@ export class AppComponent implements OnInit {
 
   private createForm() {
     this.exampleForm = new FormGroup<ExampleFormControls>({
-      name: new FormControl(''),
-      state: new FormControl('', [
-        (control) => this.validateStateValue(control),
-      ]),
+      name: new FormControl('', [Validators.required]),
+      state: new FormControl('', [Validators.required]),
     });
   }
 
-  validateStateValue(control: AbstractControl): ValidationErrors | null {
-    const { value } = control;
+  handleFormSubmission(): void {
+    const {
+      controls: {
+        name: { value: name },
+        state: stateCode,
+      },
+    } = this.exampleForm;
 
-    const foundByCode = this.brazilianStates.find(
-      (p) => String(p.codigo).toUpperCase() === String(value).toUpperCase()
-    );
+    const stateName = this.brazilianStates.find(
+      (state) => state.codigo === stateCode.value
+    ).nome;
 
-    const foundByDisplay = this.brazilianStates.find(
-      (state) =>
-        state.nome.toUpperCase() === String(value).toUpperCase() ||
-        this.getStateByCode(state.codigo).toUpperCase() ===
-          String(value).toUpperCase()
-    );
-
-    const foundState = foundByCode || foundByDisplay;
-
-    if (foundState) {
-      if (!foundByCode)
-        this.exampleForm.controls.state.setValue(foundState.codigo);
-
-      return null;
-    }
-
-    return {
-      invalidState: 'Escolha um estado da lista.',
-    };
-  }
-
-  handleConsolePrint(): void {
-    console.log(this.exampleForm.value);
-  }
-
-  private _filter(value: string | number): BrazilianState[] {
-    const filterValue = String(value).toLowerCase();
-
-    const filtered = this.brazilianStates.filter((state) =>
-      this.getStateByCode(state.codigo).toLowerCase().includes(filterValue)
-    );
-
-    return filtered;
-  }
-
-  getStateByCode(codigo: number): string {
-    const foundState = this.brazilianStates.find(
-      (state) => state.codigo === codigo
-    );
-
-    if (!foundState) return '';
-
-    return `${foundState.sigla} - ${foundState.nome}`;
+    alert(`Boa, ${name}. Você escolheu ${stateName}!`);
   }
 }

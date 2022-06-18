@@ -1,34 +1,17 @@
-<app-auto-complete-input></app-auto-complete-input>
-
-<form [formGroup]="exampleForm">
+<form [formGroup]="exampleForm" (submit)="handleFormSubmission()">
   <div>
     <mat-form-field>
       <mat-label>Name</mat-label>
-      <input matInput formControlName="name" placeholder="Name" />
+      <input matInput formControlName="name" placeholder="Nome" />
     </mat-form-field>
 
-    <mat-form-field>
-      <input
-        matInput
-        type="text"
-        placeholder="State"
-        formControlName="state"
-        [matAutocomplete]="auto"
-      />
-
-      <mat-autocomplete
-        #auto="matAutocomplete"
-        [displayWith]="getStateByCode.bind(this)"
-      >
-        <mat-option
-          *ngFor="let state of filteredBrazilianStates | async"
-          [value]="state.codigo"
-        >
-          {{ getStateByCode(state.codigo) }}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
+    <app-auto-complete-input
+      placeholder="Estado"
+      [collection]="brazilianStates"
+      [options]="autoCompleteInputOptions"
+      [abstractFormControl]="exampleForm.controls.state"
+    ></app-auto-complete-input>
   </div>
 
-  <button (click)="handleConsolePrint()">Console!</button>
+  <button [disabled]="exampleForm.invalid" type="submit">Bora!</button>
 </form>
